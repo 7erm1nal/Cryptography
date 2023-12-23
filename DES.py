@@ -1,3 +1,130 @@
+sizeOfBlock=64
+sizeOfChar=8
+quantityOfRounds=16 
+
+IP=(58,	50,	42,	34,	26,	18,	10,	2,
+    60,	52,	44,	36,	28,	20,	12,	4,
+    62,	54,	46,	38,	30,	22,	14,	6,
+    64,	56,	48,	40,	32,	24,	16,	8,
+    57,	49,	41,	33,	25,	17,	9,  1,
+    59,	51,	43,	35,	27,	19,	11,	3,
+    61,	53,	45,	37,	29,	21,	13,	5,
+    63,	55,	47,	39,	31,	23,	15,	7)
+
+reverse_IP=(40,	8,	48,	16,	56,	24,	64,	32,
+            39,	7,	47,	15,	55,	23,	63,	31,
+            38,	6,	46,	14,	54,	22,	62,	30,
+            37,	5,	45,	13,	53,	21,	61,	29,
+            36,	4,	44,	12,	52,	20,	60,	28,
+            35,	3,	43,	11,	51,	19,	59,	27,
+            34,	2,	42,	10,	50,	18,	58,	26,
+            33,	1,	41,	9,	49,	17,	57,	25)
+
+P= (16,	7,	20,	21,	29,	12,	28,	17,
+    1,	15,	23,	26,	5,	18,	31,	10,
+    2,	8,	24,	14,	32,	27,	3,	9,
+    19,	13,	30,	6,	22,	11,	4,	25)
+
+PC=(57,	49,	41,	33,	25,	17,	9,
+    1,	58,	50,	42,	34,	26,	18,
+    10,	2,	59,	51,	43,	35,	27,
+    19,	11,	3,	60,	52,	44,	36,
+    63,	55,	47,	39,	31,	23,	15,
+    7,	62,	54,	46,	38,	30,	22,
+    14,	6,	61,	53,	45,	37,	29,
+    21,	13,	5,	28,	20,	12,	4)
+
+reverse_PC=(14,	17,	11,	24,	1,	5,
+            3,	28,	15,	6,	21,	10,
+            23,	19,	12,	4,	26,	8,
+            16,	7,	27,	20,	13,	2,
+            41,	52,	31,	37,	47,	55,
+            30,	40,	51,	45,	33,	48,
+            44,	49,	39,	56,	34,	53,
+            46,	42,	50,	36,	29,	32)
+
+S=(
+#S1
+(
+(14, 4, 13,1,	2,	15,	11,	8,	3,	10,	6,	12,	5,	9,	0,	7),
+(0,	15,	 7, 4,	14,	2,	13,	1,	10,	6,	12,	11,	9,	5,	3,	8),
+(4,	1, 14,  8,	13,	6,	2,	11,	15,	12,	9,	7,	3,	10,	5,	0),
+(15, 12, 8,	2,	4,	9,	1,	7,	5,	11,	3,	14,	10,	0,	6,	13)
+),
+
+#S2
+(
+(15, 1,	8,	14,	6,	11,	3,	4,	9,	7,	2,	13,	12,	0,	5,	10),
+(3,	13,	4,	7,  15,	2,	8,	14,	12,	0,	1,	10,	6,	9,	11,	5),
+(0,	14,	7,	11,	10,	4,	13,	1,	5,	8,	12,	6,	9,	3,	2,	15),
+(13, 8,	10,	1,	3,	15,	4,	2,	11,	6,	7,	12,	0,	5,	14,	9)
+),
+
+#S3
+(
+(10, 0,	9,	14,	6,	3,	15,	5,	1,	13,	12,	7,	11,	4,	2,	8),
+(13, 7,	0,	9,	3,	4,	6,	10,	2,	8,	5,	14,	12,	11,	15,	1),
+(13, 6,	4,	9,	8,	15,	3,	0,	11,	1,	2,	12,	5,	10,	14,	7),
+(1,	10,	13,	0,	6,	9,	8,	7,	4,	15,	14,	3,	11,	5,	2,	12)
+),
+
+#S4
+(
+(7,	13,	14,	3,	0,	6,	9,	10,	1,	2,	8,	5,	11,	12,	4,	15),
+(13, 8,	11,	5,	6,	15,	0,	3,	4,	7,	2,	12,	1,	10,	14,	9),
+(10, 6,	9,	0,	12,	11,	7,	13,	15,	1,	3,	14,	5,	2,	8,	4),
+(3,	15,	0,	6,	10,	1,	13,	8,	9,	4,	5,	11,	12,	7,	2,	14)
+),
+
+#S5
+(
+(2,	 12, 4,	1,	7,	10,	11,	6,	8,	5,	3,	15,	13,	0,	14,	9),
+(14, 11, 2,	12,	4,	7,	13,	1,	5,	0,	15,	10,	3,	9,	8,	6),
+(4,	 2,	 1,	11,	10,	13,	7,	8,	15,	9,	12,	5,	6,	3,	0,	14),
+(11, 8,	 12, 7,	1,	14,	2,	13,	6,	15,	0,	9,	10,	4,	5,	3)
+),
+
+#S6
+(
+(12, 1,	 10, 15, 9,	2,	6,	8,	0,	13,	3,	4,	14,	7,	5,	11),
+(10, 15, 4,	 2,	 7,	12,	9,	5,	6,	1,	13,	14,	0,	11,	3,	8),
+(9,	 14, 15, 5,	 2,	8,	12,	3,	7,	0,	4,	10,	1,	13,	11,	6),
+(4,	 3,	 2,	 12, 9,	5,	15,	10,	11,	14,	1,	7,	6,	0,	8,	13)
+),
+
+#S7
+(
+(4,	 11, 2,	 14, 15, 0,	8,	13,	3,	12,	9,	7,	5,	10,	6,	1),
+(13, 0,	 11, 7,	 4,	 9,	1,	10,	14,	3,	5,	12,	2,	15,	8,	6),
+(1,	 4,	 11, 13, 12, 3,	7,	14,	10,	15,	6,	8,	0,	5,	9,	2),
+(6,	 11, 13, 8,	 1,	 4,	10,	7,	9,	5,	0,	15,	14,	2,	3,	12)
+),
+
+#S8
+(
+(13, 2,  8,	 4,	6,	15,	11,	1,	10,	9,	3,	14,	5,	0,	12,	7),
+(1,	 15, 13, 8,	10,	3,	7,	4,	12,	5,	6,	11,	0,	14,	9,	2),
+(7,	 11, 4,	 1,	9,	12,	14,	2,	0,	6,	10,	13,	15,	3,	5,	8),
+(2,	 1,	 14, 7,	4,	10,	8,	13,	15,	12,	9,	0,	3,	5,	6,	11)
+)
+)
+
+def bitmixer(bits:str, is_reverse:bool=False):
+    """
+    Выполнение начальной и конечной перестановки IP \n
+    Флаг is_reverse -- конечная ли перестановка
+    """
+    tmp=""
+    if is_reverse:
+        for i in range(sizeOfBlock):
+            tmp+=bits[reverse_IP[i]-1]
+        #print("Произвел конечную перестановку IP")
+    else:
+        for i in range(sizeOfBlock):
+            tmp+=bits[IP[i]-1]
+        #print("Произвел начальную перестановку IP")
+    return ''.join(tmp)
+
 def binarystring(text:str):
     """
     Преобразует строку текста в бинарный формат
@@ -6,6 +133,7 @@ def binarystring(text:str):
     for i in range(len(text)):
         tmp=bin(ord(text[i]))[2:]
         bintext.append('0'*(sizeOfChar-len(tmp))+tmp)
+    #print("Преобразовал строку в биты")
     return ''.join(bintext)
 
 def rightlenghtstr(string:str):
@@ -14,7 +142,8 @@ def rightlenghtstr(string:str):
     она не начнет делиться на размер блока
     """
     while len(string)%sizeOfBlock !=0:
-        string+='0'*(sizeOfChar-ord('#'))+bin(ord('#'))[2:]
+        string+='0'*(sizeOfChar-len(bin(ord('#'))[2:]))+bin(ord('#'))[2:]
+    #print("Добавил лишние символы для кратности с 64")
     return string
 
 def cutbinstringintoblocks(string:str):
@@ -22,82 +151,186 @@ def cutbinstringintoblocks(string:str):
     Разделение строки битов на массив по размеру блока
     """
     tmp=[string[i:i + sizeOfBlock] for i in range(0, len(string), sizeOfBlock)]
+    #print("Разделил строку битов на блоки по 64")
     return tmp
 
 def charstring(string:str):
     """
     Преобразует строку битов обратно в текст
     """
+    print(string)
     binstr=[string[i:i + sizeOfChar] for i in range(0, len(string), sizeOfChar)]
     text=[]
     for i in range(len(binstr)):
         text.append(chr(int(binstr[i] ,2)))
+    #print("Преобразовал строку битов в текст")
+    
     return ''.join(text)
 
-def LengthKeyword(text:str, kwLength:int):
+def E(bits:str):
     """
-    Отрезает лишнее от ключа или добавляет нули в начало
+    Расширяет 32-битный блок в 48-битный
     """
-    if len(text)>kwLength:
-        text=text[0:kwLength]
-    else:
-        while len(text)<kwLength:
-            text='0'+text
-    return text
+    bits=bits[-1]+bits[::]+bits[0:2]
+    tmp=[]
+    j=1
+    i=5
+    while i<len(bits):
+        tmp.append(bits[j-1]+bits[j:i]+bits[i+1])
+        j+=4
+        i+=4
+    #print("Расширил строку с 32 до 48 битов")
+    return ''.join(tmp)
 
-def XOR(a:str,b:str):
+def XOR(a, b):
     """
-    xor...просто xor...
+    Xor двух строк битов одинаковой длины
     """
-    result=''
+    tmp=''
     for i in range(len(a)):
-        if a[i]==b[i]:
-            result+=('0')
+        if a[i]!=b[i]:
+            tmp+='1'
         else:
-            result+=('1')
+            tmp+='0'
+    #print("XOR")
+    return tmp
+
+def f(string:str, key:str):
+    """
+    Функция Фейстеля
+    """
+    string=E(string)
+    bits=XOR(string, key)
+    bits=[bits[i:i + 6] for i in range(0, len(bits), 6)]
+    tmp=[]
+    for i in range(len(bits)):
+        row=int(bits[i][0]+bits[i][-1], 2)
+        column=int(bits[i][1:5], 2)
+        a=bin(S[i][row][column])[2:]
+        tmp.append('0'*(4-len(bin(S[i][row][column])[2:]))+a)
+    tmp=''.join(tmp)
+    result=''
+    for i in range(32):
+        result+=tmp[P[i]-1]
+    #print("Функция Фейстеля")
     return result
 
-def f(a:str,b:str):
+def Encrypt():
     """
-    Шифрующая функция
+    Главная функция шифрования
     """
-    return XOR(a,b) #Позже изменю
+    text=input('Введите текст:\n')
+    keyword=input('Введите ключ:\n')
 
-def DecodeRound(string:str, key:str):
-    L=string[0:len(string)/2]
-    R=string[len(string)/2:]
+    text=binarystring(text)
+    text=rightlenghtstr(text)
+    text=cutbinstringintoblocks(text)
 
-    return XOR(f(L, key), R)+L
+    keyword=binarystring(keyword)
+    keyword=rightlenghtstr(keyword)
+    keyword=keyword[0:64]
+    K=''
+    for i in range(len(PC)):            #Первичная перестановка ключа PC
+        K+=keyword[PC[i]-1]
 
-def EncodeRound(string:str, key:str):
-    L=string[0:len(string)/2]
-    R=string[len(string)/2:]
+    C=K[0:28]
+    D=K[28:]
+    shiftKey=1
+    key=[]
+    for i in range(quantityOfRounds):
+        if i == 0 or i == 1 or i == 9 or i == 15:
+            shiftKey=1
+        else:
+            shiftKey=2
+        
+        C=C[shiftKey:]+C[:shiftKey]
+        D=D[shiftKey:]+D[:shiftKey]
 
-    return R+XOR(L,f(R,key))
+        result=''
+        buf=C+D
+        for j in range(len(reverse_PC)):            #Обратная перестановка ключа PC
+            result+=buf[reverse_PC[j]-1]
+        key.append(result)
 
-def shiftkey_next(key:str):
+
+
+    for i in range(len(text)):
+        text[i]=bitmixer(text[i])       #IP
+        H=text[i][:32]
+        L=text[i][32:]
+        for j in range(quantityOfRounds): #16 раундов
+            l=f(L,key[j])
+            h=H
+            H=l
+            L=XOR(h,l)
+
+        text[i]=H+L
+        text[i]=bitmixer(text[i], True) #обратное IP
+
+
+    print(charstring(''.join(text)))
+
+def Decrypt():
     """
-    Сдвиг ключа на указанное кол-во символов \n
-    сло[во]-[во]сло
+    Главная функция расшифровки
     """
-    key=key[len(key)-shiftKey:]+key[:len(key)]
-    return key
 
-def shiftKey_prev(key:str):
-    """
-    Сдвиг ключа на указанное кол-во символов \n
-    [сл]ово-ово[сл]
-    """
-    key=key[shiftKey:]+key[:shiftKey]
-    return key
+    text=input('Введите текст:\n')
+    keyword=input('Введите ключ:\n')
+
+    text=binarystring(text)
+    text=rightlenghtstr(text)
+    text=cutbinstringintoblocks(text)
+
+    keyword=binarystring(keyword)
+    keyword=rightlenghtstr(keyword)
+    keyword=keyword[0:64]
+    K=''
+    for i in range(len(PC)):            #Первичная перестановка ключа PC
+        K+=keyword[PC[i]-1]
+
+    C=K[0:28]
+    D=K[28:]
+    shiftKey=1
+    key=[]
+    for i in range(quantityOfRounds):
+        if i == 0 or i == 1 or i == 9 or i == 15:
+            shiftKey=1
+        else:
+            shiftKey=2
+        
+        C=C[shiftKey:]+C[:shiftKey]
+        D=D[shiftKey:]+D[:shiftKey]
+
+        result=''
+        buf=C+D
+        for j in range(len(reverse_PC)):            #Обратная перестановка ключа PC
+            result+=buf[reverse_PC[j]-1]
+        key.insert(0, result)
 
 
-sizeOfBlock=128
-sizeOfChar=16
-shiftKey=2
-quantityOfRounds=16 
 
-text=input("Введите текст для шифрования \n")
-key=input("Введите ключ\n")
+    for i in range(len(text)):
+        text[i]=bitmixer(text[i])       #IP
+        H=text[i][:32]
+        L=text[i][32:]
+        for j in range(quantityOfRounds): #16 раундов
+            l=f(L,key[j])
+            h=H
+            H=l
+            L=XOR(h,l)
 
-text=rightlenghtstr(binarystring(text))
+        text[i]=H+L
+        text[i]=bitmixer(text[i], True) #обратное IP
+
+
+    print(charstring(''.join(text)))
+
+question=input(" Зашифровать - 0 \n Расшифровать - 1\n")
+if question=='0':
+    Encrypt()
+elif question=='1':
+    Decrypt()
+else:
+    print("Не понимаю...")
+    
