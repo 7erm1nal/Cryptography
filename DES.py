@@ -1,6 +1,4 @@
-sizeOfBlock=64
-sizeOfChar=8
-quantityOfRounds=16 
+
 
 IP=(58,	50,	42,	34,	26,	18,	10,	2,
     60,	52,	44,	36,	28,	20,	12,	4,
@@ -116,11 +114,11 @@ def bitmixer(bits:str, is_reverse:bool=False):
     """
     tmp=""
     if is_reverse:
-        for i in range(sizeOfBlock):
+        for i in range(64):
             tmp+=bits[reverse_IP[i]-1]
         #print("Произвел конечную перестановку IP")
     else:
-        for i in range(sizeOfBlock):
+        for i in range(64):
             tmp+=bits[IP[i]-1]
         #print("Произвел начальную перестановку IP")
     return ''.join(tmp)
@@ -132,7 +130,7 @@ def binarystring(text:str):
     bintext=[]
     for i in range(len(text)):
         tmp=bin(ord(text[i]))[2:]
-        bintext.append('0'*(sizeOfChar-len(tmp))+tmp)
+        bintext.append('0'*(8-len(tmp))+tmp)
     #print("Преобразовал строку в биты")
     return ''.join(bintext)
 
@@ -141,8 +139,8 @@ def rightlenghtstr(string:str):
     Добивает строку символами # до тех пор пока
     она не начнет делиться на размер блока
     """
-    while len(string)%sizeOfBlock !=0:
-        string+='0'*(sizeOfChar-len(bin(ord('#'))[2:]))+bin(ord('#'))[2:]
+    while len(string)%64 !=0:
+        string+='0'*(8-len(bin(ord('#'))[2:]))+bin(ord('#'))[2:]
     #print("Добавил лишние символы для кратности с 64")
     return string
 
@@ -150,7 +148,7 @@ def cutbinstringintoblocks(string:str):
     """
     Разделение строки битов на массив по размеру блока
     """
-    tmp=[string[i:i + sizeOfBlock] for i in range(0, len(string), sizeOfBlock)]
+    tmp=[string[i:i + 64] for i in range(0, len(string), 64)]
     #print("Разделил строку битов на блоки по 64")
     return tmp
 
@@ -158,20 +156,23 @@ def charstring(string:str):
     """
     Преобразует строку битов обратно в текст
     """
-    print(string)
-    binstr=[string[i:i + sizeOfChar] for i in range(0, len(string), sizeOfChar)]
+    binstr=[string[i:i + 8] for i in range(0, len(string), 8)]
     text=[]
     for i in range(len(binstr)):
         text.append(chr(int(binstr[i] ,2)))
     #print("Преобразовал строку битов в текст")
-    
-    return ''.join(text)
+    text=''.join(text)
+    return text
 
 def E(bits:str):
     """
     Расширяет 32-битный блок в 48-битный
     """
     bits=bits[-1]+bits[::]+bits[0:2]
+    #расширяю строку битов с
+    #1,2,3,4,5,...,29,30,31,32 до
+    #32,1,2,3,4,5,...,29,30,31,32,1,2
+    #И прохожу по ним блоком по 4 (от j до i) добавляя бит левее и бит правее
     tmp=[]
     j=1
     i=5
@@ -182,9 +183,14 @@ def E(bits:str):
     #print("Расширил строку с 32 до 48 битов")
     return ''.join(tmp)
 
-def XOR(a, b):
+def XOR(a:str, b:str):
     """
     Xor двух строк битов одинаковой длины
+    0   0  =  0\n
+    0   1  =  1\n
+    1   0  =  1\n
+    1   1  =  0\n
+    Совпадающие биты дают 0, это и проверяется
     """
     tmp=''
     for i in range(len(a)):
@@ -199,18 +205,18 @@ def f(string:str, key:str):
     """
     Функция Фейстеля
     """
-    string=E(string)
-    bits=XOR(string, key)
-    bits=[bits[i:i + 6] for i in range(0, len(bits), 6)]
+    string=E(string) #Расширяем с 32 до 48 битов
+    bits=XOR(string, key) #XOR-им с 48-битовым ключом 
+    bits=[bits[i:i + 6] for i in range(0, len(bits), 6)] #Делим на 6-битовые блоки
     tmp=[]
-    for i in range(len(bits)):
-        row=int(bits[i][0]+bits[i][-1], 2)
-        column=int(bits[i][1:5], 2)
-        a=bin(S[i][row][column])[2:]
+    for i in range(len(bits)): #Для каждого блока:
+        row=int(bits[i][0]+bits[i][-1], 2)  #Строка = крайние биты в блоке
+        column=int(bits[i][1:5], 2)         #Столбец = Оставшиеся 4 бита
+        a=bin(S[i][row][column])[2:]        #Подменяем на значение в соответствии с таблицей S
         tmp.append('0'*(4-len(bin(S[i][row][column])[2:]))+a)
     tmp=''.join(tmp)
     result=''
-    for i in range(32):
+    for i in range(32):     #Конечная перестановка в функции Фейстеля
         result+=tmp[P[i]-1]
     #print("Функция Фейстеля")
     return result
@@ -237,8 +243,8 @@ def Encrypt():
     D=K[28:]
     shiftKey=1
     key=[]
-    for i in range(quantityOfRounds):
-        if i == 0 or i == 1 or i == 9 or i == 15:
+    for i in range(16):
+        if i == 0 or i == 1 or i == 8 or i == 15:
             shiftKey=1
         else:
             shiftKey=2
@@ -256,15 +262,15 @@ def Encrypt():
 
     for i in range(len(text)):
         text[i]=bitmixer(text[i])       #IP
-        H=text[i][:32]
-        L=text[i][32:]
-        for j in range(quantityOfRounds): #16 раундов
+        H=text[i][:32]      #Первая половина High
+        L=text[i][32:]      #Вторая половина Low
+        for j in range(16): #16 раундов
             l=f(L,key[j])
             h=H
             H=l
             L=XOR(h,l)
 
-        text[i]=H+L
+        text[i]=L+H
         text[i]=bitmixer(text[i], True) #обратное IP
 
 
@@ -293,7 +299,7 @@ def Decrypt():
     D=K[28:]
     shiftKey=1
     key=[]
-    for i in range(quantityOfRounds):
+    for i in range(16):
         if i == 0 or i == 1 or i == 9 or i == 15:
             shiftKey=1
         else:
@@ -312,21 +318,21 @@ def Decrypt():
 
     for i in range(len(text)):
         text[i]=bitmixer(text[i])       #IP
-        H=text[i][:32]
-        L=text[i][32:]
-        for j in range(quantityOfRounds): #16 раундов
+        H=text[i][32:]      #поменял местами High и Low
+        L=text[i][:32]
+        for j in range(16): #16 раундов
             l=f(L,key[j])
             h=H
             H=l
             L=XOR(h,l)
 
-        text[i]=H+L
+        text[i]=L+H
         text[i]=bitmixer(text[i], True) #обратное IP
 
 
     print(charstring(''.join(text)))
 
-question=input(" Зашифровать - 0 \n Расшифровать - 1\n")
+question=input(" Зашифровать - 0 \n Расшифровать - 1 \n")
 if question=='0':
     Encrypt()
 elif question=='1':
