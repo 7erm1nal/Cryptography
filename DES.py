@@ -157,10 +157,14 @@ def charstring(string:str):
     Преобразует строку битов обратно в текст
     """
     binstr=[string[i:i + 8] for i in range(0, len(string), 8)]
+    
+    print('Bits before charstring',binstr)
+
     text=[]
     for i in range(len(binstr)):
         text.append(chr(int(binstr[i] ,2)))
     #print("Преобразовал строку битов в текст")
+    
     text=''.join(text)
     return text
 
@@ -213,7 +217,7 @@ def f(string:str, key:str):
         row=int(bits[i][0]+bits[i][-1], 2)  #Строка = крайние биты в блоке
         column=int(bits[i][1:5], 2)         #Столбец = Оставшиеся 4 бита
         a=bin(S[i][row][column])[2:]        #Подменяем на значение в соответствии с таблицей S
-        tmp.append('0'*(4-len(bin(S[i][row][column])[2:]))+a)
+        tmp.append('0'*(4-len(a))+a)
     tmp=''.join(tmp)
     result=''
     for i in range(32):     #Конечная перестановка в функции Фейстеля
@@ -221,16 +225,10 @@ def f(string:str, key:str):
     #print("Функция Фейстеля")
     return result
 
-def Encrypt():
+def keylist(keyword:str):
     """
-    Главная функция шифрования
+    Функция, генерирующая массив из 16 ключей
     """
-    text=input('Введите текст:\n')
-    keyword=input('Введите ключ:\n')
-
-    text=binarystring(text)
-    text=rightlenghtstr(text)
-    text=cutbinstringintoblocks(text)
 
     keyword=binarystring(keyword)
     keyword=rightlenghtstr(keyword)
@@ -258,20 +256,35 @@ def Encrypt():
             result+=buf[reverse_PC[j]-1]
         key.append(result)
 
+    print('key', key)
 
+    return key
+
+
+def Encrypt():
+    """
+    Главная функция шифрования
+    """
+    text=input('Введите текст:\n')
+    keyword=input('Введите ключ:\n')
+
+    text=binarystring(text)
+    text=rightlenghtstr(text)
+    text=cutbinstringintoblocks(text)
+
+    key=keylist(keyword)
 
     for i in range(len(text)):
         text[i]=bitmixer(text[i])       #IP
-        H=text[i][:32]      #Первая половина High
-        L=text[i][32:]      #Вторая половина Low
+        L=text[i][:32]      #Первая половина High
+        R=text[i][32:]      #Вторая половина Low
         for j in range(16): #16 раундов
-            l=f(L,key[j])
-            h=H
-            H=l
-            L=XOR(h,l)
+            L, R=R, XOR(L, f(R,key[j]))
 
-        text[i]=L+H
+        text[i]=L+R
         text[i]=bitmixer(text[i], True) #обратное IP
+
+    print(text)
 
 
     print(charstring(''.join(text)))
@@ -288,45 +301,19 @@ def Decrypt():
     text=rightlenghtstr(text)
     text=cutbinstringintoblocks(text)
 
-    keyword=binarystring(keyword)
-    keyword=rightlenghtstr(keyword)
-    keyword=keyword[0:64]
-    K=''
-    for i in range(len(PC)):            #Первичная перестановка ключа PC
-        K+=keyword[PC[i]-1]
+    key=keylist(keyword)
+    key=key[::-1]
 
-    C=K[0:28]
-    D=K[28:]
-    shiftKey=1
-    key=[]
-    for i in range(16):
-        if i == 0 or i == 1 or i == 9 or i == 15:
-            shiftKey=1
-        else:
-            shiftKey=2
-        
-        C=C[shiftKey:]+C[:shiftKey]
-        D=D[shiftKey:]+D[:shiftKey]
-
-        result=''
-        buf=C+D
-        for j in range(len(reverse_PC)):            #Обратная перестановка ключа PC
-            result+=buf[reverse_PC[j]-1]
-        key.insert(0, result)
-
-
+    print('key', key)
 
     for i in range(len(text)):
         text[i]=bitmixer(text[i])       #IP
-        H=text[i][32:]      #поменял местами High и Low
-        L=text[i][:32]
+        L=text[i][:32]     
+        R=text[i][32:]
         for j in range(16): #16 раундов
-            l=f(L,key[j])
-            h=H
-            H=l
-            L=XOR(h,l)
+            L, R=XOR(R, f(L,key[j])), L
 
-        text[i]=L+H
+        text[i]=L+R
         text[i]=bitmixer(text[i], True) #обратное IP
 
 
