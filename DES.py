@@ -152,19 +152,19 @@ def cutbinstringintoblocks(string:str):
     #print("Разделил строку битов на блоки по 64")
     return tmp
 
-def charstring(string:str):
+def charstring(string:str, flag:bool=False):
     """
     Преобразует строку битов обратно в текст
     """
     binstr=[string[i:i + 8] for i in range(0, len(string), 8)]
-    
-    print('Bits before charstring',binstr)
 
     text=[]
     for i in range(len(binstr)):
         text.append(chr(int(binstr[i] ,2)))
     #print("Преобразовал строку битов в текст")
-    
+    if flag:
+        print(text)
+
     text=''.join(text)
     return text
 
@@ -256,8 +256,6 @@ def keylist(keyword:str):
             result+=buf[reverse_PC[j]-1]
         key.append(result)
 
-    print('key', key)
-
     return key
 
 
@@ -276,47 +274,45 @@ def Encrypt():
 
     for i in range(len(text)):
         text[i]=bitmixer(text[i])       #IP
-        L=text[i][:32]      #Первая половина High
-        R=text[i][32:]      #Вторая половина Low
+        L=text[i][:32]      #Первая половина Left
+        R=text[i][32:]      #Вторая половина Right
         for j in range(16): #16 раундов
             L, R=R, XOR(L, f(R,key[j]))
 
         text[i]=L+R
         text[i]=bitmixer(text[i], True) #обратное IP
 
-    print(text)
-
-
-    print(charstring(''.join(text)))
+    print('Символы шифротекста:')
+    print(charstring(''.join(text), True))
+    print('Биты шифротекста')
+    print(''.join(text))
 
 def Decrypt():
     """
     Главная функция расшифровки
     """
 
-    text=input('Введите текст:\n')
+    text=input('Введите биты шифротекста:\n')
     keyword=input('Введите ключ:\n')
 
-    text=binarystring(text)
     text=rightlenghtstr(text)
     text=cutbinstringintoblocks(text)
 
     key=keylist(keyword)
     key=key[::-1]
 
-    print('key', key)
 
     for i in range(len(text)):
         text[i]=bitmixer(text[i])       #IP
-        L=text[i][:32]     
-        R=text[i][32:]
+        L=text[i][:32]      #Left
+        R=text[i][32:]      #Right
         for j in range(16): #16 раундов
             L, R=XOR(R, f(L,key[j])), L
 
         text[i]=L+R
         text[i]=bitmixer(text[i], True) #обратное IP
 
-
+    print()
     print(charstring(''.join(text)))
 
 question=input(" Зашифровать - 0 \n Расшифровать - 1 \n")
