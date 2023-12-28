@@ -1,5 +1,7 @@
 import os
-
+"""
+UTF-8 Кодировка
+"""
 IP=(58,	50,	42,	34,	26,	18,	10,	2,
     60,	52,	44,	36,	28,	20,	12,	4,
     62,	54,	46,	38,	30,	22,	14,	6,
@@ -249,6 +251,7 @@ def f(string:str, key:str):
     for i in range(32):     #Конечная перестановка в функции Фейстеля
         result+=tmp[P[i]-1]
     if is_verbose:
+        print("Конечная перестановка P")
         print(*[result[i:i + 4] for i in range(0, len(result), 4)], sep='\n')
         input()
     return result
@@ -374,27 +377,51 @@ def Decrypt():
     """
     Главная функция расшифровки
     """
-
+    if is_verbose:
+        cls()
     text=input('Введите биты шифротекста:\n')
     keyword=input('Введите ключ:\n')
-
+    if is_verbose:
+        cls()
     text=rightlenghtstr(text)
     text=cutbinstringintoblocks(text)
-
+    if is_verbose:
+        print("Перевел в бинарный формат, разделил на блоки по 64 бит")
+        input()
     key=keylist(keyword)
     key=key[::-1]
+    if is_verbose:
+        print('Набор из 16 ключей по 48 бит (в обратном порядке)')
+        print(*key, sep='\n')
 
 
     for i in range(len(text)):
+        if is_verbose:
+            print("Расшифровка для 64-битного блока текста №"+str(i+1))
         text[i]=bitmixer(text[i])       #IP
         L=text[i][:32]      #Left
         R=text[i][32:]      #Right
+        if is_verbose:
+            print(*[text[i][x:x + 8] for x in range(0, len(text[i]), 8)], sep='\n')
+            print("Произвел перестановку IP\nРазделил результат надвое")
+            print(L, R, sep='\n')
+            input()
+            print("16 Раундов шифрования")
+        
         for j in range(16): #16 раундов
             L, R=XOR(R, f(L,key[j])), L
+            if is_verbose:
+                print("Итерация", j)
+                print("Левая часть", *[L[x:x + 8] for x in range(0, len(L), 8)])
+                print("Правая часть", *[R[x:x + 8] for x in range(0, len(R), 8)])
+                input()
 
         text[i]=L+R
         text[i]=bitmixer(text[i], True) #обратное IP
-
+        if is_verbose:
+            print(*[text[i][x:x + 8] for x in range(0, len(text[i]), 8)], sep='\n')
+            print("64-битный блок текста после обратного IP")
+            input()
     print()
     print(charstring(''.join(text)))
 
