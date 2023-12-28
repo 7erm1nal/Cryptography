@@ -1,4 +1,4 @@
-
+import os
 
 IP=(58,	50,	42,	34,	26,	18,	10,	2,
     60,	52,	44,	36,	28,	20,	12,	4,
@@ -107,6 +107,9 @@ S=(
 )
 )
 
+def cls():
+    os.system('cls')
+
 def bitmixer(bits:str, is_reverse:bool=False):
     """
     Выполнение начальной и конечной перестановки IP \n
@@ -131,7 +134,10 @@ def binarystring(text:str):
     for i in range(len(text)):
         tmp=bin(ord(text[i]))[2:]
         bintext.append('0'*(8-len(tmp))+tmp)
-    #print("Преобразовал строку в биты")
+    
+    if is_verbose:
+        print(*bintext, sep='\n')
+
     return ''.join(bintext)
 
 def rightlenghtstr(string:str):
@@ -141,7 +147,9 @@ def rightlenghtstr(string:str):
     """
     while len(string)%64 !=0:
         string+='0'*(8-len(bin(ord('#'))[2:]))+bin(ord('#'))[2:]
-    #print("Добавил лишние символы для кратности с 64")
+    if is_verbose:
+        tmp=[string[i:i + 8] for i in range(0, len(string), 8)]
+        print(*tmp, sep='\n')
     return string
 
 def cutbinstringintoblocks(string:str):
@@ -149,7 +157,13 @@ def cutbinstringintoblocks(string:str):
     Разделение строки битов на массив по размеру блока
     """
     tmp=[string[i:i + 64] for i in range(0, len(string), 64)]
-    #print("Разделил строку битов на блоки по 64")
+    
+    if is_verbose:
+        for j in range(len(tmp)):
+            b=[tmp[j][i:i + 8] for i in range(0, len(tmp[j]), 8)]
+            print(*b, sep='\n')
+            print('--------')
+
     return tmp
 
 def charstring(string:str, flag:bool=False):
@@ -210,19 +224,33 @@ def f(string:str, key:str):
     Функция Фейстеля
     """
     string=E(string) #Расширяем с 32 до 48 битов
+    if is_verbose:
+        print("Функция Фейстеля")
+        print(*[string[i:i + 6] for i in range(0, len(string), 6)], sep='\n')
+        print("Расширил половину блока текста с 32 до 48")
     bits=XOR(string, key) #XOR-им с 48-битовым ключом 
     bits=[bits[i:i + 6] for i in range(0, len(bits), 6)] #Делим на 6-битовые блоки
+    if is_verbose:
+        print("Сложение расширенной половины блока по модулю 2 с ключом")
+        print(*bits)
     tmp=[]
     for i in range(len(bits)): #Для каждого блока:
         row=int(bits[i][0]+bits[i][-1], 2)  #Строка = крайние биты в блоке
         column=int(bits[i][1:5], 2)         #Столбец = Оставшиеся 4 бита
         a=bin(S[i][row][column])[2:]        #Подменяем на значение в соответствии с таблицей S
         tmp.append('0'*(4-len(a))+a)
+        if is_verbose:
+            print("Подстановка S"+str(i), "Строчка-"+str(row), "Колонка-"+str(column), "Число-"+str(a))
+    if is_verbose:
+        print("Результат подстановки S")
+        print(*tmp)
     tmp=''.join(tmp)
     result=''
     for i in range(32):     #Конечная перестановка в функции Фейстеля
         result+=tmp[P[i]-1]
-    #print("Функция Фейстеля")
+    if is_verbose:
+        print(*[result[i:i + 4] for i in range(0, len(result), 4)], sep='\n')
+        input()
     return result
 
 def keylist(keyword:str):
@@ -233,12 +261,25 @@ def keylist(keyword:str):
     keyword=binarystring(keyword)
     keyword=rightlenghtstr(keyword)
     keyword=keyword[0:64]
+    if is_verbose:
+        print('Повторил то же самое с ключом:\nКонвертировал в бинарный формат\nДобавил символы при необходимости\nВыбрал первые 64 бита')
+        print(*[keyword[i:i + 8] for i in range(0, len(keyword), 8)], sep='\n')
+        input()
     K=''
     for i in range(len(PC)):            #Первичная перестановка ключа PC
         K+=keyword[PC[i]-1]
+    if is_verbose:
+        print('Произвел первичную перестановку ключа по таблице PC\nисключая каждый 8-й бит')
+        print(*[K[i:i + 7] for i in range(0, len(K), 7)], sep='\n')
+        input()
+        
 
     C=K[0:28]
     D=K[28:]
+    if is_verbose:
+        print("Разделил ключ на 2 части по 28 бит")
+        print(C, D, sep='\n')
+        print("16 Итераций генерации ключей")
     shiftKey=1
     key=[]
     for i in range(16):
@@ -249,11 +290,16 @@ def keylist(keyword:str):
         
         C=C[shiftKey:]+C[:shiftKey]
         D=D[shiftKey:]+D[:shiftKey]
-
+        if is_verbose:
+            print(i, "Левый сдвиг обоих частей на", shiftKey)
+            print(C, D, sep="\n")
         result=''
         buf=C+D
         for j in range(len(reverse_PC)):            #Обратная перестановка ключа PC
             result+=buf[reverse_PC[j]-1]
+        if is_verbose:
+            print("Совместил обе части в одну и произвел перестановку PC2")
+            print(*[result[i:i + 6] for i in range(0, len(result), 6)], sep='\n')
         key.append(result)
 
     return key
@@ -263,24 +309,61 @@ def Encrypt():
     """
     Главная функция шифрования
     """
+    if is_verbose:
+        cls()
     text=input('Введите текст:\n')
     keyword=input('Введите ключ:\n')
-
+    if is_verbose:
+        cls()
     text=binarystring(text)
+    if is_verbose:
+        print("Конвертировал текст в бинарный формат")
+        input()
     text=rightlenghtstr(text)
+    if is_verbose:
+        print("Добавил символы # в конец текста для кратности с 64")
+        input()
     text=cutbinstringintoblocks(text)
+    if is_verbose:
+        print('Разделил текст на блоки по 64 бита')
+        input()
 
     key=keylist(keyword)
+    if is_verbose:
+        print('Набор из 16 ключей по 48 бит')
+        print(*key, sep='\n')
+        input()
 
     for i in range(len(text)):
+        if is_verbose:
+            print("Шифрование для 64-битного блока текста №"+str(i+1))
+
         text[i]=bitmixer(text[i])       #IP
         L=text[i][:32]      #Первая половина Left
         R=text[i][32:]      #Вторая половина Right
+        
+        if is_verbose:
+            print(*[text[i][x:x + 8] for x in range(0, len(text[i]), 8)], sep='\n')
+            print("Произвел перестановку IP\nРазделил результат надвое")
+            print(L, R, sep='\n')
+            input()
+            print("16 Раундов шифрования")
+
         for j in range(16): #16 раундов
             L, R=R, XOR(L, f(R,key[j]))
+            if is_verbose:
+                print("Итерация", j)
+                print("Левая часть", *[L[x:x + 8] for x in range(0, len(L), 8)])
+                print("Правая часть", *[R[x:x + 8] for x in range(0, len(R), 8)])
+                input()
 
         text[i]=L+R
         text[i]=bitmixer(text[i], True) #обратное IP
+        if is_verbose:
+            print(*[text[i][x:x + 8] for x in range(0, len(text[i]), 8)], sep='\n')
+            print("64-битный блок текста после обратного IP")
+            input()
+
 
     print('Символы шифротекста:')
     print(charstring(''.join(text), True))
@@ -316,10 +399,25 @@ def Decrypt():
     print(charstring(''.join(text)))
 
 question=input(" Зашифровать - 0 \n Расшифровать - 1 \n")
+is_verbose=input('Показать пошагово? (Y) \n')
 if question=='0':
-    Encrypt()
+    if is_verbose == 'Y' or is_verbose == 'y':
+        print('Нажимайте enter')
+        input()
+        is_verbose==True
+        Encrypt()
+    else:
+        is_verbose==False
+        Encrypt()
 elif question=='1':
-    Decrypt()
+    if is_verbose == 'Y' or is_verbose == 'y':
+        print('Нажимайте enter')
+        input()
+        is_verbose==True
+        Decrypt()
+    else:
+        is_verbose==False
+        Decrypt()
 else:
     print("Не понимаю...")
     
